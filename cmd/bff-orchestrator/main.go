@@ -54,11 +54,6 @@ func main() {
 		httpClient,
 		logger,
 	)
-	shipmentClient := httpadapter.NewShipmentClient(
-		cfg.ServiceShipmentBaseURL,
-		httpClient,
-		logger,
-	)
 
 	productSummaryUseCase := application.NewGetProductSummaryUseCase(
 		catalogClient,
@@ -71,7 +66,6 @@ func main() {
 	)
 	listOrdersUseCase := application.NewListOrdersUseCase(
 		orderClient,
-		shipmentClient,
 		logger,
 		metrics,
 		tracer,

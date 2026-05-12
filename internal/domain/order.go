@@ -13,12 +13,13 @@ type OrderSummary struct {
 }
 
 type Order struct {
-	ID         string
-	CustomerID string
-	Status     string
-	Total      float64
-	Currency   string
-	CreatedAt  time.Time
+	ID             string
+	CustomerID     string
+	Status         string
+	ShipmentStatus string
+	Total          float64
+	Currency       string
+	CreatedAt      time.Time
 }
 
 type Shipment struct {

@@ -87,7 +87,7 @@ It is split into:
 Examples:
 
 - `ProductSummaryUseCase` and `OrdersUseCase` are input ports.
-- `CatalogService`, `PricingService`, `OrderService`, and `ShipmentService` are output ports.
+- `CatalogService`, `PricingService`, `InventoryService`, and `OrderService` are output ports.
 
 Practical rule:
 
@@ -283,7 +283,6 @@ Current variables:
 - `SERVICE_PRICING_BASE_URL`
 - `SERVICE_INVENTORY_BASE_URL`
 - `SERVICE_ORDER_BASE_URL`
-- `SERVICE_SHIPMENT_BASE_URL`
 
 Practical rule:
 
@@ -304,7 +303,7 @@ Key points:
 ## Recommended Conventions
 
 - use use case names with business verbs: `Get...`, `List...`, `Create...`.
-- use capability-oriented output port names: `CatalogService`, `ShipmentService`.
+- use capability-oriented output port names: `CatalogService`, `OrderService`.
 - model aggregated responses in `internal/domain`.
 - keep wiring in `cmd/bff-orchestrator/main.go`.
 - add tests in `internal/application`.

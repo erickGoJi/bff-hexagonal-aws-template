@@ -7,6 +7,7 @@ import (
 	"io"
 	"log/slog"
 	nethttp "net/http"
+	"strconv"
 	"strings"
 
 	"github.com/erickGoJi/hexagonal-aws-template/internal/domain"
@@ -28,6 +29,15 @@ type InventoryClient struct {
 	baseURL string
 	client  *nethttp.Client
 	logger  *slog.Logger
+}
+
+type dummyJSONProduct struct {
+	ID          int      `json:"id"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Tags        []string `json:"tags"`
+	Price       float64  `json:"price"`
+	Stock       int      `json:"stock"`
 }
 
 func NewCatalogClient(baseURL string, client *nethttp.Client, logger *slog.Logger) *CatalogClient {
@@ -55,59 +65,52 @@ func NewInventoryClient(baseURL string, client *nethttp.Client, logger *slog.Log
 }
 
 func (c *CatalogClient) GetProduct(ctx context.Context, productID string) (domain.CatalogProduct, error) {
-	var payload struct {
-		ID          string   `json:"id"`
-		Name        string   `json:"name"`
-		Description string   `json:"description"`
-		Tags        []string `json:"tags"`
-	}
-
-	if err := doRequest(ctx, c.client, c.baseURL+"/products/"+productID, &payload); err != nil {
+	payload, err := fetchDummyJSONProduct(ctx, c.client, c.baseURL, productID)
+	if err != nil {
 		return domain.CatalogProduct{}, fmt.Errorf("catalog service: %w", err)
 	}
 
 	return domain.CatalogProduct{
-		ID:          payload.ID,
-		Name:        payload.Name,
+		ID:          strconv.Itoa(payload.ID),
+		Name:        payload.Title,
 		Description: payload.Description,
 		Tags:        payload.Tags,
 	}, nil
 }
 
 func (c *PricingClient) GetPrice(ctx context.Context, productID string) (domain.ProductPricing, error) {
-	var payload struct {
-		ProductID string  `json:"productId"`
-		Amount    float64 `json:"amount"`
-		Currency  string  `json:"currency"`
-	}
-
-	if err := doRequest(ctx, c.client, c.baseURL+"/prices/"+productID, &payload); err != nil {
+	payload, err := fetchDummyJSONProduct(ctx, c.client, c.baseURL, productID)
+	if err != nil {
 		return domain.ProductPricing{}, fmt.Errorf("pricing service: %w", err)
 	}
 
 	return domain.ProductPricing{
-		ProductID: payload.ProductID,
-		Amount:    payload.Amount,
-		Currency:  payload.Currency,
+		ProductID: strconv.Itoa(payload.ID),
+		Amount:    payload.Price,
+		Currency:  "USD",
 	}, nil
 }
 
 func (c *InventoryClient) GetInventory(ctx context.Context, productID string) (domain.ProductInventory, error) {
-	var payload struct {
-		ProductID string `json:"productId"`
-		Available bool   `json:"available"`
-		Units     int    `json:"units"`
-	}
-
-	if err := doRequest(ctx, c.client, c.baseURL+"/inventory/"+productID, &payload); err != nil {
+	payload, err := fetchDummyJSONProduct(ctx, c.client, c.baseURL, productID)
+	if err != nil {
 		return domain.ProductInventory{}, fmt.Errorf("inventory service: %w", err)
 	}
 
 	return domain.ProductInventory{
-		ProductID: payload.ProductID,
-		Available: payload.Available,
-		Units:     payload.Units,
+		ProductID: strconv.Itoa(payload.ID),
+		Available: payload.Stock > 0,
+		Units:     payload.Stock,
 	}, nil
+}
+
+func fetchDummyJSONProduct(ctx context.Context, client *nethttp.Client, baseURL, productID string) (dummyJSONProduct, error) {
+	var payload dummyJSONProduct
+	if err := doRequest(ctx, client, baseURL+"/products/"+productID, &payload); err != nil {
+		return dummyJSONProduct{}, err
+	}
+
+	return payload, nil
 }
 
 func doRequest(ctx context.Context, client *nethttp.Client, url string, target any) error {

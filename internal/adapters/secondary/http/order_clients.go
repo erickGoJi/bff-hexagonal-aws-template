@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	nethttp "net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -12,12 +13,6 @@ import (
 )
 
 type OrderClient struct {
-	baseURL string
-	client  *nethttp.Client
-	logger  *slog.Logger
-}
-
-type ShipmentClient struct {
 	baseURL string
 	client  *nethttp.Client
 	logger  *slog.Logger
@@ -31,55 +26,47 @@ func NewOrderClient(baseURL string, client *nethttp.Client, logger *slog.Logger)
 	}
 }
 
-func NewShipmentClient(baseURL string, client *nethttp.Client, logger *slog.Logger) *ShipmentClient {
-	return &ShipmentClient{
-		baseURL: strings.TrimRight(baseURL, "/"),
-		client:  client,
-		logger:  logger,
-	}
-}
-
 func (c *OrderClient) ListOrders(ctx context.Context) ([]domain.Order, error) {
-	var payload []struct {
-		ID         string    `json:"id"`
-		CustomerID string    `json:"customerId"`
-		Status     string    `json:"status"`
-		Total      float64   `json:"total"`
-		Currency   string    `json:"currency"`
-		CreatedAt  time.Time `json:"createdAt"`
+	var payload struct {
+		Carts []struct {
+			ID        int     `json:"id"`
+			UserID    int     `json:"userId"`
+			Total     float64 `json:"total"`
+			TotalQty  int     `json:"totalQuantity"`
+			CreatedAt string  `json:"createdAt"`
+		} `json:"carts"`
 	}
 
-	if err := doRequest(ctx, c.client, c.baseURL+"/orders", &payload); err != nil {
+	if err := doRequest(ctx, c.client, c.baseURL+"/carts", &payload); err != nil {
 		return nil, fmt.Errorf("order service: %w", err)
 	}
 
-	orders := make([]domain.Order, 0, len(payload))
-	for _, item := range payload {
+	orders := make([]domain.Order, 0, len(payload.Carts))
+	for _, item := range payload.Carts {
+		createdAt := time.Time{}
+		if item.CreatedAt != "" {
+			if parsed, err := time.Parse(time.RFC3339, item.CreatedAt); err == nil {
+				createdAt = parsed
+			}
+		}
+
+		orderStatus := "open"
+		shipmentStatus := "processing"
+		if item.TotalQty == 0 {
+			orderStatus = "empty"
+			shipmentStatus = "pending"
+		}
+
 		orders = append(orders, domain.Order{
-			ID:         item.ID,
-			CustomerID: item.CustomerID,
-			Status:     item.Status,
-			Total:      item.Total,
-			Currency:   item.Currency,
-			CreatedAt:  item.CreatedAt,
+			ID:             strconv.Itoa(item.ID),
+			CustomerID:     strconv.Itoa(item.UserID),
+			Status:         orderStatus,
+			ShipmentStatus: shipmentStatus,
+			Total:          item.Total,
+			Currency:       "USD",
+			CreatedAt:      createdAt,
 		})
 	}
 
 	return orders, nil
-}
-
-func (c *ShipmentClient) GetShipment(ctx context.Context, orderID string) (domain.Shipment, error) {
-	var payload struct {
-		OrderID string `json:"orderId"`
-		Status  string `json:"status"`
-	}
-
-	if err := doRequest(ctx, c.client, c.baseURL+"/shipments/"+orderID, &payload); err != nil {
-		return domain.Shipment{}, fmt.Errorf("shipment service: %w", err)
-	}
-
-	return domain.Shipment{
-		OrderID: payload.OrderID,
-		Status:  payload.Status,
-	}, nil
 }

@@ -21,7 +21,3 @@ type InventoryService interface {
 type OrderService interface {
 	ListOrders(ctx context.Context) ([]domain.Order, error)
 }
-
-type ShipmentService interface {
-	GetShipment(ctx context.Context, orderID string) (domain.Shipment, error)
-}

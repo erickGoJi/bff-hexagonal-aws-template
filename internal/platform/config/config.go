@@ -16,7 +16,6 @@ type Config struct {
 	ServicePricingBaseURL   string
 	ServiceInventoryBaseURL string
 	ServiceOrderBaseURL     string
-	ServiceShipmentBaseURL  string
 }
 
 func Load() (Config, error) {
@@ -31,11 +30,10 @@ func Load() (Config, error) {
 		AppEnv:                  getEnv("APP_ENV", "local"),
 		LogLevel:                getEnv("LOG_LEVEL", "INFO"),
 		DownstreamTimeout:       time.Duration(timeoutInt) * time.Millisecond,
-		ServiceCatalogBaseURL:   getEnv("SERVICE_CATALOG_BASE_URL", "http://localhost:8081"),
-		ServicePricingBaseURL:   getEnv("SERVICE_PRICING_BASE_URL", "http://localhost:8082"),
-		ServiceInventoryBaseURL: getEnv("SERVICE_INVENTORY_BASE_URL", "http://localhost:8083"),
-		ServiceOrderBaseURL:     getEnv("SERVICE_ORDER_BASE_URL", "http://localhost:8084"),
-		ServiceShipmentBaseURL:  getEnv("SERVICE_SHIPMENT_BASE_URL", "http://localhost:8085"),
+		ServiceCatalogBaseURL:   getEnv("SERVICE_CATALOG_BASE_URL", "https://dummyjson.com"),
+		ServicePricingBaseURL:   getEnv("SERVICE_PRICING_BASE_URL", "https://dummyjson.com"),
+		ServiceInventoryBaseURL: getEnv("SERVICE_INVENTORY_BASE_URL", "https://dummyjson.com"),
+		ServiceOrderBaseURL:     getEnv("SERVICE_ORDER_BASE_URL", "https://dummyjson.com"),
 	}
 
 	return cfg, nil

@@ -42,11 +42,10 @@ APP_NAME=hexagonal-bff
 APP_ENV=local
 LOG_LEVEL=INFO
 DOWNSTREAM_TIMEOUT_MS=1500
-SERVICE_CATALOG_BASE_URL=https://catalog.internal
-SERVICE_PRICING_BASE_URL=https://pricing.internal
-SERVICE_INVENTORY_BASE_URL=https://inventory.internal
-SERVICE_ORDER_BASE_URL=https://orders.internal
-SERVICE_SHIPMENT_BASE_URL=https://shipments.internal
+SERVICE_CATALOG_BASE_URL=https://dummyjson.com
+SERVICE_PRICING_BASE_URL=https://dummyjson.com
+SERVICE_INVENTORY_BASE_URL=https://dummyjson.com
+SERVICE_ORDER_BASE_URL=https://dummyjson.com
 ```
 
 ## Run Tests

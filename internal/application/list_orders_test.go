@@ -21,19 +21,6 @@ func (s stubOrderService) ListOrders(_ context.Context) ([]domain.Order, error) 
 	return s.result, s.err
 }
 
-type stubShipmentService struct {
-	results map[string]domain.Shipment
-	err     error
-}
-
-func (s stubShipmentService) GetShipment(_ context.Context, orderID string) (domain.Shipment, error) {
-	if s.err != nil {
-		return domain.Shipment{}, s.err
-	}
-
-	return s.results[orderID], nil
-}
-
 func TestListOrdersUseCaseExecute(t *testing.T) {
 	logger := slog.Default()
 	now := time.Now().UTC()
@@ -41,20 +28,13 @@ func TestListOrdersUseCaseExecute(t *testing.T) {
 		stubOrderService{
 			result: []domain.Order{
 				{
-					ID:         "o-1",
-					CustomerID: "c-1",
-					Status:     "confirmed",
-					Total:      150.5,
-					Currency:   "USD",
-					CreatedAt:  now,
-				},
-			},
-		},
-		stubShipmentService{
-			results: map[string]domain.Shipment{
-				"o-1": {
-					OrderID: "o-1",
-					Status:  "in_transit",
+					ID:             "o-1",
+					CustomerID:     "c-1",
+					Status:         "open",
+					ShipmentStatus: "processing",
+					Total:          150.5,
+					Currency:       "USD",
+					CreatedAt:      now,
 				},
 			},
 		},
@@ -80,7 +60,6 @@ func TestListOrdersUseCaseExecuteDownstreamError(t *testing.T) {
 		stubOrderService{
 			err: errors.New("order service unavailable"),
 		},
-		stubShipmentService{},
 		logger,
 		observability.NewMetrics(logger, "test"),
 		observability.NewTracer(logger),
