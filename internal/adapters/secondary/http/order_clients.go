@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/erickGoJi/hexagonal-aws-template/internal/domain"
+	"github.com/erickGoJi/hexagonal-aws-template/internal/platform/httpclient"
 )
 
 type OrderClient struct {
@@ -37,7 +38,7 @@ func (c *OrderClient) ListOrders(ctx context.Context) ([]domain.Order, error) {
 		} `json:"carts"`
 	}
 
-	if err := doRequest(ctx, c.client, c.baseURL+"/carts", &payload); err != nil {
+	if err := httpclient.GetJSON(ctx, c.client, c.baseURL+"/carts", &payload, httpclient.DefaultRetryConfig); err != nil {
 		return nil, fmt.Errorf("order service: %w", err)
 	}
 

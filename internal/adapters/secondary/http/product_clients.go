@@ -2,15 +2,14 @@ package http
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log/slog"
 	nethttp "net/http"
 	"strconv"
 	"strings"
 
 	"github.com/erickGoJi/hexagonal-aws-template/internal/domain"
+	"github.com/erickGoJi/hexagonal-aws-template/internal/platform/httpclient"
 )
 
 type CatalogClient struct {
@@ -106,35 +105,10 @@ func (c *InventoryClient) GetInventory(ctx context.Context, productID string) (d
 
 func fetchDummyJSONProduct(ctx context.Context, client *nethttp.Client, baseURL, productID string) (dummyJSONProduct, error) {
 	var payload dummyJSONProduct
-	if err := doRequest(ctx, client, baseURL+"/products/"+productID, &payload); err != nil {
+	if err := httpclient.GetJSON(ctx, client, baseURL+"/products/"+productID, &payload, httpclient.DefaultRetryConfig); err != nil {
 		return dummyJSONProduct{}, err
 	}
 
 	return payload, nil
 }
 
-func doRequest(ctx context.Context, client *nethttp.Client, url string, target any) error {
-	req, err := nethttp.NewRequestWithContext(ctx, nethttp.MethodGet, url, nil)
-	if err != nil {
-		return err
-	}
-
-	req.Header.Set("Accept", "application/json")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode >= nethttp.StatusBadRequest {
-		body, _ := io.ReadAll(io.LimitReader(resp.Body, 2048))
-		return fmt.Errorf("unexpected status code %d: %s", resp.StatusCode, strings.TrimSpace(string(body)))
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(target); err != nil {
-		return fmt.Errorf("decode response: %w", err)
-	}
-
-	return nil
-}
