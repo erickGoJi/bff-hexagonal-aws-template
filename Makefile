@@ -11,7 +11,7 @@ SLS ?= npx serverless
 .PHONY: build test package deploy clean
 
 build:
-	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o $(BOOTSTRAP_BINARY) ./cmd/bff-lambda
+	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o $(BOOTSTRAP_BINARY) ./cmd/bff-orchestrator
 
 test:
 	go test ./...

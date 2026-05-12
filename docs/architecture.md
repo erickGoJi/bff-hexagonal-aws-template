@@ -20,7 +20,7 @@ Request flow:
 
 1. API Gateway receives the HTTP request.
 2. Lambda invokes the `bootstrap` binary.
-3. [cmd/bff-lambda/main.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/cmd/bff-lambda/main.go) creates configuration, logger, metrics, tracer, HTTP clients, and use cases.
+3. [cmd/bff-orchestrator/main.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/cmd/bff-orchestrator/main.go) creates configuration, logger, metrics, tracer, HTTP clients, and use cases.
 4. The Lambda handler in [internal/adapters/primary/lambda/handler.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/adapters/primary/lambda/handler.go) detects whether the event comes from API Gateway v1 or v2.
 5. The handler normalizes the request and routes it to a use case.
 6. The use case lives in `internal/application` and orchestrates calls to one or more output ports.
@@ -29,7 +29,7 @@ Request flow:
 
 ## Directory Structure
 
-### `cmd/bff-lambda`
+### `cmd/bff-orchestrator`
 
 Contains the Lambda process entrypoint.
 
@@ -306,7 +306,7 @@ Key points:
 - use use case names with business verbs: `Get...`, `List...`, `Create...`.
 - use capability-oriented output port names: `CatalogService`, `ShipmentService`.
 - model aggregated responses in `internal/domain`.
-- keep wiring in `cmd/bff-lambda/main.go`.
+- keep wiring in `cmd/bff-orchestrator/main.go`.
 - add tests in `internal/application`.
 
 ## Where to Make Each Change
@@ -317,4 +317,4 @@ Key points:
 - new contract: `internal/ports`
 - new client: `internal/adapters/secondary`
 - new environment variable: `internal/platform/config` + `serverless.yml`
-- new wiring: `cmd/bff-lambda/main.go`
+- new wiring: `cmd/bff-orchestrator/main.go`

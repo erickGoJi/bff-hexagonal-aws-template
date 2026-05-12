@@ -19,7 +19,7 @@ This project is designed for endpoints that:
 ## Structure
 
 ```text
-cmd/bff-lambda/                 Lambda entrypoint
+cmd/bff-orchestrator/           Lambda entrypoint
 internal/application/           Use cases
 internal/domain/                Business models and rules
 internal/ports/                 Input and output ports

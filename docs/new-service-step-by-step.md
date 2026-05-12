@@ -204,7 +204,7 @@ Rule:
 
 - every new downstream should have explicit configuration.
 
-## Step 7. Wire Everything in `cmd/bff-lambda/main.go`
+## Step 7. Wire Everything in `cmd/bff-orchestrator/main.go`
 
 This is where everything gets connected.
 
