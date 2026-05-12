@@ -57,14 +57,14 @@ make test
 
 ## Deployment with Serverless Framework
 
-The project includes [serverless.yml](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/serverless.yml) to deploy a Lambda behind HTTP API with these endpoints:
+The project includes [serverless.yml](./serverless.yml) to deploy a Lambda behind HTTP API with these endpoints:
 
 - `GET /products/{productId}`
 - `GET /orders`
 
 It uses Serverless Framework `3.33.0`.
 
-Available commands in [Makefile](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/Makefile):
+Available commands in [Makefile](./Makefile):
 
 ```bash
 make build
@@ -82,5 +82,5 @@ make deploy STAGE=dev AWS_REGION=us-east-1
 
 ## Additional Documentation
 
-Detailed project documentation lives in [docs/README.md](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/docs/README.md).
+Detailed project documentation lives in [docs/README.md](./docs/README.md).
 # bff-hexagonal-aws-template

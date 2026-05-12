@@ -4,8 +4,8 @@ This directory contains the operational documentation for the template.
 
 ## Contents
 
-- [Project architecture](</Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/docs/architecture.md>)
-- [How to create a new service step by step](</Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/docs/new-service-step-by-step.md>)
+- [Project architecture](./architecture.md)
+- [How to create a new service step by step](./new-service-step-by-step.md)
 
 ## When to read each document
 
