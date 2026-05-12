@@ -1,6 +1,6 @@
 service: hexagonal-aws-template
 
-frameworkVersion: '3.33.0'
+frameworkVersion: '3.40.0'
 configValidationMode: error
 
 provider:
@@ -9,7 +9,7 @@ provider:
   region: ${opt:region, 'us-east-1'}
   runtime: provided.al2023
   architecture: arm64
-  memorySize: 512
+  memorySize: 128
   timeout: 10
   logRetentionInDays: 14
   versionFunctions: false
