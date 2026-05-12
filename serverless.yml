@@ -1,0 +1,66 @@
+service: hexagonal-aws-template
+
+frameworkVersion: '3.33.0'
+configValidationMode: error
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  runtime: provided.al2023
+  architecture: arm64
+  memorySize: 512
+  timeout: 10
+  logRetentionInDays: 14
+  versionFunctions: false
+  tracing:
+    lambda: true
+    apiGateway: true
+  environment:
+    APP_NAME: ${self:service}
+    APP_ENV: ${sls:stage}
+    LOG_LEVEL: ${env:LOG_LEVEL, 'INFO'}
+    DOWNSTREAM_TIMEOUT_MS: ${env:DOWNSTREAM_TIMEOUT_MS, '1500'}
+    SERVICE_CATALOG_BASE_URL: ${env:SERVICE_CATALOG_BASE_URL, 'https://catalog.internal'}
+    SERVICE_PRICING_BASE_URL: ${env:SERVICE_PRICING_BASE_URL, 'https://pricing.internal'}
+    SERVICE_INVENTORY_BASE_URL: ${env:SERVICE_INVENTORY_BASE_URL, 'https://inventory.internal'}
+    SERVICE_ORDER_BASE_URL: ${env:SERVICE_ORDER_BASE_URL, 'https://orders.internal'}
+    SERVICE_SHIPMENT_BASE_URL: ${env:SERVICE_SHIPMENT_BASE_URL, 'https://shipments.internal'}
+  httpApi:
+    payload: '2.0'
+    metrics: true
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - xray:PutTraceSegments
+            - xray:PutTelemetryRecords
+          Resource: '*'
+  tags:
+    service: ${self:service}
+    stage: ${sls:stage}
+    managed-by: serverless-framework
+
+package:
+  individually: true
+  patterns:
+    - '!./**'
+    - bootstrap
+
+functions:
+  bffApi:
+    name: ${self:service}-${sls:stage}-api
+    description: BFF Lambda exposing products and orders endpoints
+    handler: bootstrap
+    package:
+      patterns:
+        - '!./**'
+        - bootstrap
+    events:
+      - httpApi:
+          path: /products/{productId}
+          method: GET
+      - httpApi:
+          path: /orders
+          method: GET
