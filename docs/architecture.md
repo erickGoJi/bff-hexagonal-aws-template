@@ -20,8 +20,8 @@ Request flow:
 
 1. API Gateway receives the HTTP request.
 2. Lambda invokes the `bootstrap` binary.
-3. [cmd/bff-orchestrator/main.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/cmd/bff-orchestrator/main.go) creates configuration, logger, metrics, tracer, HTTP clients, and use cases.
-4. The Lambda handler in [internal/adapters/primary/lambda/handler.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/adapters/primary/lambda/handler.go) detects whether the event comes from API Gateway v1 or v2.
+3. [cmd/bff-orchestrator/main.go](../cmd/bff-orchestrator/main.go) creates configuration, logger, metrics, tracer, HTTP clients, and use cases.
+4. The Lambda handler in [internal/adapters/primary/lambda/handler.go](../internal/adapters/primary/lambda/handler.go) detects whether the event comes from API Gateway v1 or v2.
 5. The handler normalizes the request and routes it to a use case.
 6. The use case lives in `internal/application` and orchestrates calls to one or more output ports.
 7. The outbound adapters in `internal/adapters/secondary/http` call downstream services.
@@ -53,9 +53,9 @@ Contains business models and domain errors.
 
 Current files:
 
-- [internal/domain/product.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/domain/product.go)
-- [internal/domain/order.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/domain/order.go)
-- [internal/domain/errors.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/domain/errors.go)
+- [internal/domain/product.go](../internal/domain/product.go)
+- [internal/domain/order.go](../internal/domain/order.go)
+- [internal/domain/errors.go](../internal/domain/errors.go)
 
 This layer should contain:
 
@@ -76,8 +76,8 @@ Defines system contracts.
 
 Current files:
 
-- [internal/ports/inbound.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/ports/inbound.go)
-- [internal/ports/outbound.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/ports/outbound.go)
+- [internal/ports/inbound.go](../internal/ports/inbound.go)
+- [internal/ports/outbound.go](../internal/ports/outbound.go)
 
 It is split into:
 
@@ -99,9 +99,9 @@ Contains use cases.
 
 Current files:
 
-- [internal/application/get_product_summary.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/application/get_product_summary.go)
-- [internal/application/list_orders.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/application/list_orders.go)
-- [internal/application/http_response.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/application/http_response.go)
+- [internal/application/get_product_summary.go](../internal/application/get_product_summary.go)
+- [internal/application/list_orders.go](../internal/application/list_orders.go)
+- [internal/application/http_response.go](../internal/application/http_response.go)
 
 Responsibilities:
 
@@ -127,7 +127,7 @@ Contains inbound adapters.
 
 Current file:
 
-- [internal/adapters/primary/lambda/handler.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/adapters/primary/lambda/handler.go)
+- [internal/adapters/primary/lambda/handler.go](../internal/adapters/primary/lambda/handler.go)
 
 The current handler:
 
@@ -147,8 +147,8 @@ Contains outbound integrations.
 
 Current files:
 
-- [internal/adapters/secondary/http/product_clients.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/adapters/secondary/http/product_clients.go)
-- [internal/adapters/secondary/http/order_clients.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/adapters/secondary/http/order_clients.go)
+- [internal/adapters/secondary/http/product_clients.go](../internal/adapters/secondary/http/product_clients.go)
+- [internal/adapters/secondary/http/order_clients.go](../internal/adapters/secondary/http/order_clients.go)
 
 Responsibilities:
 
@@ -168,11 +168,11 @@ Contains cross-cutting capabilities.
 
 Current subdirectories:
 
-- [internal/platform/config/config.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/platform/config/config.go)
-- [internal/platform/observability/logger.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/platform/observability/logger.go)
-- [internal/platform/observability/metrics.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/platform/observability/metrics.go)
-- [internal/platform/observability/tracing.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/platform/observability/tracing.go)
-- [internal/platform/observability/http.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/platform/observability/http.go)
+- [internal/platform/config/config.go](../internal/platform/config/config.go)
+- [internal/platform/observability/logger.go](../internal/platform/observability/logger.go)
+- [internal/platform/observability/metrics.go](../internal/platform/observability/metrics.go)
+- [internal/platform/observability/tracing.go](../internal/platform/observability/tracing.go)
+- [internal/platform/observability/http.go](../internal/platform/observability/http.go)
 
 Responsibilities:
 
@@ -291,7 +291,7 @@ Practical rule:
 
 ## Deployment
 
-Deployment is defined in [serverless.yml](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/serverless.yml).
+Deployment is defined in [serverless.yml](../serverless.yml).
 
 Key points:
 

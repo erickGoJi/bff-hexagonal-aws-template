@@ -86,7 +86,7 @@ Use different models when it makes sense:
 
 ## Step 3. Define Input and Output Ports
 
-Edit [internal/ports/inbound.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/ports/inbound.go) and [internal/ports/outbound.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/ports/outbound.go).
+Edit [internal/ports/inbound.go](../internal/ports/inbound.go) and [internal/ports/outbound.go](../internal/ports/outbound.go).
 
 ### Input Port
 
@@ -184,7 +184,7 @@ Do not put these concerns here:
 
 ## Step 6. Add Configuration
 
-Edit [internal/platform/config/config.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/platform/config/config.go).
+Edit [internal/platform/config/config.go](../internal/platform/config/config.go).
 
 Add new fields:
 
@@ -233,7 +233,7 @@ customerProfileUseCase := application.NewGetCustomerProfileUseCase(
 
 ## Step 8. Register the Route in the Handler
 
-Edit [internal/adapters/primary/lambda/handler.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/adapters/primary/lambda/handler.go).
+Edit [internal/adapters/primary/lambda/handler.go](../internal/adapters/primary/lambda/handler.go).
 
 ### 8.1 Add the dependency to `Handler`
 
@@ -304,8 +304,8 @@ Current pattern:
 
 Reference files:
 
-- [internal/application/get_product_summary_test.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/application/get_product_summary_test.go)
-- [internal/application/list_orders_test.go](/Users/erickeduardogomezjimenez/projects/hexagonal-aws-template/internal/application/list_orders_test.go)
+- [internal/application/get_product_summary_test.go](../internal/application/get_product_summary_test.go)
+- [internal/application/list_orders_test.go](../internal/application/list_orders_test.go)
 
 ## Step 11. Update Documentation
 
