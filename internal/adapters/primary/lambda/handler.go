@@ -17,7 +17,7 @@ type Handler struct {
 	productSummaryUseCase ports.ProductSummaryUseCase
 	listOrdersUseCase     ports.OrdersUseCase
 	logger                *slog.Logger
-	routes                []route
+	routesByMethod        map[string][]compiledRoute
 }
 
 func NewHandler(
@@ -25,38 +25,40 @@ func NewHandler(
 	listOrdersUseCase ports.OrdersUseCase,
 	logger *slog.Logger,
 ) *Handler {
+	routes := []route{
+		{
+			method:  http.MethodGet,
+			pattern: "/orders",
+			handler: func(ctx context.Context, request apiRequest) (responsePayload, error) {
+				output, err := listOrdersUseCase.Execute(ctx, ports.ListOrdersInput{})
+				if err != nil {
+					return responsePayload{}, err
+				}
+
+				return responsePayload(output), nil
+			},
+		},
+		{
+			method:  http.MethodGet,
+			pattern: "/products/{productId}",
+			handler: func(ctx context.Context, request apiRequest) (responsePayload, error) {
+				output, err := productSummaryUseCase.Execute(ctx, ports.GetProductSummaryInput{
+					ProductID: request.PathParameters["productId"],
+				})
+				if err != nil {
+					return responsePayload{}, err
+				}
+
+				return responsePayload(output), nil
+			},
+		},
+	}
+
 	return &Handler{
 		productSummaryUseCase: productSummaryUseCase,
 		listOrdersUseCase:     listOrdersUseCase,
 		logger:                logger,
-		routes: []route{
-			{
-				method:  http.MethodGet,
-				pattern: "/orders",
-				handler: func(ctx context.Context, request apiRequest) (responsePayload, error) {
-					output, err := listOrdersUseCase.Execute(ctx, ports.ListOrdersInput{})
-					if err != nil {
-						return responsePayload{}, err
-					}
-
-					return responsePayload(output), nil
-				},
-			},
-			{
-				method:  http.MethodGet,
-				pattern: "/products/{productId}",
-				handler: func(ctx context.Context, request apiRequest) (responsePayload, error) {
-					output, err := productSummaryUseCase.Execute(ctx, ports.GetProductSummaryInput{
-						ProductID: request.PathParameters["productId"],
-					})
-					if err != nil {
-						return responsePayload{}, err
-					}
-
-					return responsePayload(output), nil
-				},
-			},
-		},
+		routesByMethod:        compileRoutes(routes),
 	}
 }
 
@@ -144,12 +146,11 @@ func (h *Handler) handleAPIGatewayV2(
 }
 
 func (h *Handler) route(ctx context.Context, request apiRequest) (responsePayload, error) {
-	for _, candidate := range h.routes {
-		if candidate.method != request.Method {
-			continue
-		}
+	requestPathParts := splitPath(request.Path)
+	candidates := h.routesByMethod[request.Method]
 
-		matched, pathParams := matchPath(candidate.pattern, request.Path)
+	for _, candidate := range candidates {
+		matched, pathParams := matchCompiledPath(candidate, requestPathParts)
 		if !matched {
 			continue
 		}
@@ -174,17 +175,29 @@ func (h *Handler) route(ctx context.Context, request apiRequest) (responsePayloa
 	}, nil
 }
 
-func matchPath(pattern, path string) (bool, map[string]string) {
-	patternParts := splitPath(pattern)
-	pathParts := splitPath(path)
+func compileRoutes(routes []route) map[string][]compiledRoute {
+	compiledByMethod := make(map[string][]compiledRoute)
+	for _, candidate := range routes {
+		compiledByMethod[candidate.method] = append(
+			compiledByMethod[candidate.method],
+			compiledRoute{
+				pathParts: splitPath(candidate.pattern),
+				handler:   candidate.handler,
+			},
+		)
+	}
 
-	if len(patternParts) != len(pathParts) {
+	return compiledByMethod
+}
+
+func matchCompiledPath(candidate compiledRoute, pathParts []string) (bool, map[string]string) {
+	if len(candidate.pathParts) != len(pathParts) {
 		return false, nil
 	}
 
 	params := make(map[string]string)
-	for idx := range patternParts {
-		patternPart := patternParts[idx]
+	for idx := range candidate.pathParts {
+		patternPart := candidate.pathParts[idx]
 		pathPart := pathParts[idx]
 
 		if strings.HasPrefix(patternPart, "{") && strings.HasSuffix(patternPart, "}") {
@@ -239,4 +252,9 @@ type route struct {
 	method  string
 	pattern string
 	handler func(ctx context.Context, request apiRequest) (responsePayload, error)
+}
+
+type compiledRoute struct {
+	pathParts []string
+	handler   func(ctx context.Context, request apiRequest) (responsePayload, error)
 }
